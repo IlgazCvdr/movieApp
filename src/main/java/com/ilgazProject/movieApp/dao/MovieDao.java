@@ -9,13 +9,13 @@ public interface MovieDao {
     //crud
     void save(Movie movie);//create
     Movie findById(Integer id);//read
-    //find by rating ratingin yuksekligine gore fln alma metodu kur :data diye olay var sonradan variable eklemk icin
-    //find by director name yonetmenin yonettigi filmleri bul
-    //List<Movie> findByRating(Double rating);
+
+    List<Movie> findByRating(Double rating);
     List<Movie> findByDirector(String directorName);
     void ratingUpdate(Integer id , Double newRating);//update
-    void directorNameUpdate(Integer id, String newName);
-    void remove(Integer id);//delete
+    void directorNameUpdate(String newName);
+    void removeById(Integer id);//delete
+    void removeByDirector(String directorName);//delete
 
 
 

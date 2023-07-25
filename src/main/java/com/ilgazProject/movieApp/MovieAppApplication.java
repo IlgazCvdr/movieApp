@@ -6,6 +6,7 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,6 +22,11 @@ public class MovieAppApplication {
             //createMovie(movieDao, "dirName", "movName", 0);
             //findMovieById(movieDao, 0);//id ve movie data acc
             //findMovieByDirector(movieDao,"directorName")
+            //findMovieByRating(movieDao, 0.0);
+            updateRating(movieDao,0,0.0);
+            directorNameUpdate(movieDao,"newName");
+            removeById(movieDao,0);
+            removeByDirector(movieDao,"directorName");
         };
     }
 
@@ -41,8 +47,34 @@ public class MovieAppApplication {
     public List<Movie> findMovieByDirector(MovieDao movieDao, String directorName) {
         List<Movie> tempMovieList = movieDao.findByDirector(directorName);
         for (Movie movie : tempMovieList) {
-            System.out.println(movie.getMovieName());
+            System.out.println(movie.getMovieName() +" is directed by "+movie.getDirectorName());
         }
         return tempMovieList;
+    }
+
+    public List<Movie> findMovieByRating(MovieDao movieDao, Double rating) {
+        List<Movie> tempMovieList = movieDao.findByRating(rating);
+        for (Movie movie : tempMovieList) {
+            System.out.println(movie.getMovieName() + " has a rating of "+ movie.getRating());
+        }
+        return tempMovieList;
+    }
+    @Transactional
+    public void updateRating(MovieDao movieDao, Integer id,double rating) {
+        movieDao.ratingUpdate(id,rating);
+    }
+    @Transactional
+    public void directorNameUpdate(MovieDao movieDao, String dirName) {
+        movieDao.directorNameUpdate(dirName);
+    }
+    @Transactional
+
+    public void removeById(MovieDao movieDao, Integer id) {
+        movieDao.removeById(id);
+    }
+    @Transactional
+
+    public void removeByDirector(MovieDao movieDao, String dirName) {
+        movieDao.removeByDirector(dirName);
     }
 }

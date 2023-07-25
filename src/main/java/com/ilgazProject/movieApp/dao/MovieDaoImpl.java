@@ -4,8 +4,6 @@ import com.ilgazProject.movieApp.entity.Movie;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.Predicate;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,14 +36,14 @@ public class MovieDaoImpl implements MovieDao{
         return entityManager.find(Movie.class, id);
     }
 
-    //@Override
-    //public List<Movie> findByRating(Double rating) {
-    //
-    //    Predicate predicate =
-    //    entityManager.createQuery("from Movie", Movie.class);
-    //    //from movie buradaki movie class namei butun jpa ler entitylere bakiyor sql de yazana degil
-    //    return
-    //}
+    @Override
+    public List<Movie> findByRating(Double rating) {
+
+        TypedQuery<Movie> query = entityManager.createQuery("from Movie where rating >:theData", Movie.class);
+        query.setParameter("theData", rating);
+        //from movie buradaki movie class namei butun jpa ler entitylere bakiyor sql de yazana degil
+        return query.getResultList();
+    }
 
     @Override
     public List<Movie> findByDirector(String directorName) {
@@ -55,6 +53,7 @@ public class MovieDaoImpl implements MovieDao{
     }
 
     @Override
+    @Transactional
     public void ratingUpdate(Integer id, Double newRating) {
         Movie tempMovie = entityManager.find(Movie.class, id);
         tempMovie.setRating(newRating);
@@ -62,7 +61,9 @@ public class MovieDaoImpl implements MovieDao{
     }
 
     @Override
-    public void directorNameUpdate(Integer id, String newName) {
+    @Transactional
+    public void directorNameUpdate(String newName) {
+        //todo bu neden typed query deyil ona da bi bak
         Query query = entityManager.createQuery("update Movie Set directorName = :theData");
         query.setParameter("theData", newName);
         query.executeUpdate();
@@ -70,8 +71,19 @@ public class MovieDaoImpl implements MovieDao{
     }
 
     @Override
-    public void remove(Integer id) {
+    @Transactional
+    public void removeById(Integer id) {
+        Movie tempMovie = entityManager.find(Movie.class,id);
+        entityManager.remove(tempMovie);
+    }
 
+    @Override
+    @Transactional
+    public void removeByDirector(String directorName) {
+        Query query = entityManager.createQuery("delete from Movie where directorName =:theData");
+        query.setParameter("theData",directorName);
+        query.executeUpdate();
+        //todo bunu da yine ufak farkli yaptin
     }
     //implement student dao
 
