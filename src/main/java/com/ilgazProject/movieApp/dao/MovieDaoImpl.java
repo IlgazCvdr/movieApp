@@ -6,12 +6,15 @@ import jakarta.persistence.Query;
 import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Objects;
 
 @Repository
-public class MovieDaoImpl implements MovieDao{
+@Transactional
+public class MovieDaoImpl implements MovieDao {
     //define field for entity manager
     private final EntityManager entityManager;
     //injecting entity manager with constructor injection
@@ -23,65 +26,49 @@ public class MovieDaoImpl implements MovieDao{
     //implement save method
 
     @Override
-    @Transactional //we are performing updates so we add transactional
     public void save(Movie movie) {
-        //saves the movie to the database
-        if(!Objects.equals(movie.getMovieName(),null)){
-            entityManager.persist(movie);
-        }
+        entityManager.persist(movie);
     }
 
     @Override
-    public Movie findById(Integer id) {
-        return entityManager.find(Movie.class, id);
+    public Movie findById(Movie movie) {
+        return entityManager.find(Movie.class, movie.getId());
     }
 
     @Override
-    public List<Movie> findByRating(Double rating) {
+    public List<Movie> findByRating(Movie movie) {
 
         TypedQuery<Movie> query = entityManager.createQuery("from Movie where rating >:theData", Movie.class);
-        query.setParameter("theData", rating);
+        query.setParameter("theData", movie.getRating());
         //from movie buradaki movie class namei butun jpa ler entitylere bakiyor sql de yazana degil
         return query.getResultList();
     }
 
     @Override
-    public List<Movie> findByDirector(String directorName) {
-        TypedQuery<Movie> query= entityManager.createQuery("From Movie WHERE  directorName =:theData", Movie.class);//todo burada baska nasil ayirabilecegine bak
-        query.setParameter("theData", directorName);
+    public List<Movie> findByDirector(Movie movie) {
+        TypedQuery<Movie> query = entityManager.createQuery("From Movie WHERE  directorName =:theData", Movie.class);//todo burada baska nasil ayirabilecegine bak
+        query.setParameter("theData", movie.getDirectorName());
         return query.getResultList();
     }
 
     @Override
-    @Transactional
-    public void ratingUpdate(Integer id, Double newRating) {
-        Movie tempMovie = entityManager.find(Movie.class, id);
-        tempMovie.setRating(newRating);
+    public void ratingUpdate(Movie movie) {
+        Movie tempMovie = entityManager.find(Movie.class, movie.getId());
+        tempMovie.setRating(movie.getRating());
         entityManager.merge(tempMovie);//updates the entity
     }
 
-    @Override
-    @Transactional
-    public void directorNameUpdate(String newName) {
-        //todo bu neden typed query deyil ona da bi bak
-        Query query = entityManager.createQuery("update Movie Set directorName = :theData");
-        query.setParameter("theData", newName);
-        query.executeUpdate();
-        //todo bunu farkli yaptin calisma durumuna bak
-    }
 
     @Override
-    @Transactional
-    public void removeById(Integer id) {
-        Movie tempMovie = entityManager.find(Movie.class,id);
+    public void removeById(Movie movie) {
+        Movie tempMovie = entityManager.find(Movie.class, movie.getId());
         entityManager.remove(tempMovie);
     }
 
     @Override
-    @Transactional
-    public void removeByDirector(String directorName) {
+    public void removeByDirector(Movie movie) {
         Query query = entityManager.createQuery("delete from Movie where directorName =:theData");
-        query.setParameter("theData",directorName);
+        query.setParameter("theData", movie.getDirectorName());
         query.executeUpdate();
         //todo bunu da yine ufak farkli yaptin
     }
