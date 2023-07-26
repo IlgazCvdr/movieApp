@@ -1,18 +1,19 @@
 package com.ilgazProject.movieApp.entity;
 
 import jakarta.persistence.*;
+import jdk.jfr.DataAmount;
+import org.antlr.v4.runtime.misc.NotNull;
 
 @Entity
 @Table(name = "movies")
 public class Movie {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
-    private Long id;
+    private int id;
 
     @Column(name = "director_name")
     private String directorName;
-
     @Column(name = "movie_name", nullable = false)
     private String movieName;
 
@@ -30,12 +31,18 @@ public class Movie {
         this.movieName = movieName;
         this.rating = rating;
     }
+    public Movie(Integer id,String directorName, String movieName, Double rating){
+        this.id = id;
+        this.directorName = directorName;
+        this.movieName = movieName;
+        this.rating = rating;
+    }
 
-    public Long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(int id) {
         this.id = id;
     }
 
