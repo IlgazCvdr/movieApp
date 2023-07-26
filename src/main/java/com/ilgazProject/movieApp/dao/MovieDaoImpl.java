@@ -67,7 +67,7 @@ public class MovieDaoImpl implements MovieDao {
 
     @Override
     public void removeByDirector(Movie movie) {
-        Query query = entityManager.createQuery("delete from Movie where directorName =:theData");
+        TypedQuery query = (TypedQuery) entityManager.createQuery("delete from Movie where directorName =:theData");
         query.setParameter("theData", movie.getDirectorName());
         query.executeUpdate();
         //todo bunu da yine ufak farkli yaptin
